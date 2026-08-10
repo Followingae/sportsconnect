@@ -25,21 +25,20 @@ const db = new pg.Client({
 await db.connect();
 
 /**
- * Readable but strong: 4 words from a small list, a number and a symbol.
- * Someone has to type these off a PDF, so avoid ambiguous characters and
- * anything that needs a modifier key twice.
+ * Short enough to type off a printed page: one capitalised word plus four
+ * digits, 9 to 11 characters. Deliberately weaker than a passphrase — these
+ * are demo accounts, so typeability wins. Anyone using these for real should
+ * change them on first sign-in.
  */
 const WORDS = [
-  "padel", "court", "rally", "match", "squad", "league", "volley", "smash",
-  "pitch", "serve", "final", "coach", "sprint", "anchor", "summit", "harbor",
-  "cobalt", "ember", "falcon", "granite", "indigo", "juniper", "kestrel", "lumen",
+  "Padel", "Court", "Rally", "Match", "Squad", "League", "Volley", "Smash",
+  "Pitch", "Serve", "Final", "Coach", "Sprint", "Anchor", "Summit", "Falcon",
 ];
 
 function password() {
-  const pick = () => WORDS[randomBytes(1)[0] % WORDS.length];
-  const cap = (w) => w[0].toUpperCase() + w.slice(1);
-  const n = 100 + (randomBytes(2).readUInt16BE(0) % 900);
-  return `${cap(pick())}-${pick()}-${pick()}-${n}`;
+  const word = WORDS[randomBytes(1)[0] % WORDS.length];
+  const n = 1000 + (randomBytes(2).readUInt16BE(0) % 9000);
+  return `${word}${n}`;
 }
 
 const ACCOUNTS = [
