@@ -41,6 +41,12 @@ Consequences:
 - **Only a Super Admin can move a payment to `paid`.** Event Admins can see payment
   state and record that they collected cash, but their action sets `processing`
   ("collected, awaiting reconciliation"), never `paid`.
+- This is enforced by a **database trigger**, not just the server action
+  (`0003_protect_payment_settlement.sql`). RLS has to let an Event Admin update
+  payments at all so they can record cash, which means they could otherwise PATCH
+  `status: paid` straight through PostgREST with the anon key and skip the action
+  entirely. The trigger also freezes the amounts and the reference against
+  anyone but a Super Admin. `npm run db:money` proves it.
 - The platform fee is not invoiced separately. The full amount is owed to the platform,
   which settles with organizers separately (out of scope for MVP — reporting only).
 - Event Admin "revenue" figures are **expected collection**, not received funds. Label

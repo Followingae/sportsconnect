@@ -1,0 +1,120 @@
+// Proves the money invariant (docs/DECISIONS.md D4) holds at the DATABASE
+// level, not just inside the server actions: nobody except a Super Admin can
+// move a payment to `paid`.
+//
+// This matters because the organizer portal talks to Supabase directly, so an
+// Event Admin with the anon key could otherwise PATCH the row themselves.
+import { createClient } from "@supabase/supabase-js";
+import pg from "pg";
+import dotenv from "dotenv";
+
+dotenv.config({ path: ".env.local" });
+
+const URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const PW = "Sportsconnect2026!";
+
+const as = async (email) => {
+  const c = createClient(URL, ANON, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { error } = await c.auth.signInWithPassword({ email, password: PW });
+  if (error) throw new Error(`${email}: ${error.message}`);
+  return c;
+};
+
+const db = new pg.Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+});
+await db.connect();
+
+let failures = 0;
+const check = (label, actual, expected) => {
+  const ok = String(actual) === String(expected);
+  if (!ok) failures++;
+  console.log(`  ${ok ? "PASS" : "FAIL"}  ${label}: ${actual} (expected ${expected})`);
+};
+
+// --- set up a pending payment on a real event -------------------------------
+const { rows: evRows } = await db.query(
+  `select e.id, e.slug from events e
+   where e.status = 'registration_open' order by e.starts_at limit 1`
+);
+if (evRows.length === 0) {
+  console.error("No open event to test against. Run npm run db:seed-demo first.");
+  process.exit(1);
+}
+const event = evRows[0];
+
+const { rows: playerRows } = await db.query(
+  "select id from profiles where role = 'consumer' limit 1"
+);
+const player = playerRows[0];
+
+await db.query("delete from registrations where participant_name = 'Money Check'");
+
+const { rows: regRows } = await db.query(
+  `insert into registrations
+     (event_id, user_id, participant_name, role, status, source, created_by)
+   values ($1, $2, 'Money Check', 'player', 'pending', 'online', $2)
+   returning id`,
+  [event.id, player.id]
+);
+const registrationId = regRows[0].id;
+
+const { rows: payRows } = await db.query(
+  `insert into payments
+     (registration_id, event_id, reference_code, subtotal_amount, total_amount,
+      currency, method, status)
+   values ($1, $2, $3, 100, 105, 'AED', 'bank_transfer', 'pending')
+   returning id`,
+  [registrationId, event.id, `SC-CHK-${Date.now().toString(36).slice(-4).toUpperCase()}`]
+);
+const paymentId = payRows[0].id;
+
+const statusOf = async () =>
+  (await db.query("select status from payments where id = $1", [paymentId])).rows[0].status;
+
+console.log(`Testing payment ${paymentId} on "${event.slug}"\n`);
+
+const organizer = await as("organizer@sportsconnect.ae");
+const consumer = await as("player@sportsconnect.ae");
+const admin = await as("admin@sportsconnect.ae");
+
+console.log("only a Super Admin may mark a payment paid");
+
+await consumer.from("payments").update({ status: "paid" }).eq("id", paymentId);
+check("consumer cannot set paid", await statusOf(), "pending");
+
+await organizer.from("payments").update({ status: "paid" }).eq("id", paymentId);
+check("event admin cannot set paid", await statusOf(), "pending");
+
+await organizer.from("payments").update({ status: "processing" }).eq("id", paymentId);
+check("event admin CAN report cash collected", await statusOf(), "processing");
+
+await admin.from("payments").update({ status: "paid" }).eq("id", paymentId);
+check("super admin can set paid", await statusOf(), "paid");
+
+console.log("\nconsumers cannot inflate their own perks");
+const before = (
+  await db.query(
+    "select coalesce(sum(amount),0)::float as t from account_credits where user_id = $1",
+    [player.id]
+  )
+).rows[0].t;
+await consumer.from("account_credits").insert({ user_id: player.id, amount: 9999 });
+const after = (
+  await db.query(
+    "select coalesce(sum(amount),0)::float as t from account_credits where user_id = $1",
+    [player.id]
+  )
+).rows[0].t;
+check("consumer cannot grant themselves credit", after === before ? "blocked" : "GRANTED", "blocked");
+
+// --- clean up ---------------------------------------------------------------
+await db.query("delete from registrations where id = $1", [registrationId]);
+
+console.log(failures === 0 ? "\nAll money invariants hold." : `\n${failures} FAILED.`);
+await db.end();
+process.exit(failures === 0 ? 0 : 1);

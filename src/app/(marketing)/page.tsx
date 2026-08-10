@@ -11,13 +11,27 @@ import { pluralize } from "@/lib/format";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Sportsconnect — Book courts and join games in Dubai",
+  // Absolute title, so the root "%s · Sportsconnect" template doesn't repeat
+  // the brand twice on the homepage.
+  title: {
+    absolute: "Sportsconnect | Book courts and join games in Dubai",
+  },
   description:
-    "Football, padel, cricket, badminton and basketball events across Dubai. Find a game, register solo or as a team, and play.",
+    "Football, padel, cricket, badminton and basketball across Dubai. Browse live events, register solo or as a team, and pay by bank transfer or cash at the venue.",
+  alternates: { canonical: "/" },
   openGraph: {
-    title: "Sportsconnect — Game on, anytime",
-    description: "Book courts and join games in seconds. Now live in Dubai.",
-    images: ["/covers/padel.webp"],
+    title: "Sportsconnect | Game on, anytime",
+    description:
+      "Book courts and join games in seconds. Five sports, one platform, live in Dubai.",
+    url: "/",
+    images: [
+      {
+        url: "/covers/padel.webp",
+        width: 1600,
+        height: 900,
+        alt: "Padel players mid-rally on a glass court in Dubai",
+      },
+    ],
   },
 };
 

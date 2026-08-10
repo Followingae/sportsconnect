@@ -118,7 +118,8 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Everything except Next internals and static assets.
-    "/((?!_next/static|_next/image|favicon.ico|covers/|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|txt|xml|woff2?)$).*)",
+    // Everything except Next internals, static assets and the crawler/PWA
+    // files. Those must answer without a session or they 307 to /login.
+    "/((?!_next/static|_next/image|favicon.ico|covers/|icon-|apple-icon|manifest.webmanifest|robots.txt|sitemap.xml|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|txt|xml|webmanifest|woff2?)$).*)",
   ],
 };
