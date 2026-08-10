@@ -13,5 +13,4 @@ npm-debug.log*
 next-env.d.ts
 
 # Design handoff bundles — reference material, not source.
-_handoff/
-_handoff2/
+_handoff*/
