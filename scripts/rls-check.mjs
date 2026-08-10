@@ -1,0 +1,85 @@
+// Signs in as each role and asserts the RLS boundaries actually hold.
+// Run after any policy change: node scripts/rls-check.mjs
+import { createClient } from "@supabase/supabase-js";
+import dotenv from "dotenv";
+
+dotenv.config({ path: ".env.local" });
+
+const URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const PW = "Sportsconnect2026!";
+
+async function as(email) {
+  const c = createClient(URL, ANON, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { error } = await c.auth.signInWithPassword({ email, password: PW });
+  if (error) throw new Error(`${email}: ${error.message}`);
+  return c;
+}
+
+const count = async (c, table, sel = "id") => {
+  const r = await c.from(table).select(sel);
+  return r.error ? `ERR ${r.error.code}` : r.data.length;
+};
+
+let failures = 0;
+const check = (label, actual, expected) => {
+  const ok = String(actual) === String(expected);
+  if (!ok) failures++;
+  console.log(`  ${ok ? "PASS" : "FAIL"}  ${label}: ${actual} (expected ${expected})`);
+};
+
+const anon = createClient(URL, ANON, { auth: { persistSession: false } });
+const player = await as("player@sportsconnect.ae");
+const org = await as("organizer@sportsconnect.ae");
+const admin = await as("admin@sportsconnect.ae");
+console.log("sign-in as all three roles: OK\n");
+
+console.log("profiles visibility");
+check("anon sees no profiles", await count(anon, "profiles"), 0);
+check("player sees only self", await count(player, "profiles"), 1);
+check("organizer sees only self", await count(org, "profiles"), 1);
+check("super admin sees all", await count(admin, "profiles"), 3);
+
+console.log("\nreference data");
+check("anon can read sports", await count(anon, "sports"), 5);
+check("player can read settings", await count(player, "platform_settings"), 1);
+
+console.log("\nwrite protection");
+const playerWrite = await player.from("sports").insert({ slug: "chess", name: "Chess" });
+check("player blocked from writing sports", playerWrite.error ? "blocked" : "ALLOWED", "blocked");
+
+const adminWrite = await admin
+  .from("sports")
+  .insert({ slug: "tabletennis", name: "Table Tennis", sort_order: 9 });
+check("super admin can write sports", adminWrite.error ? `ERR ${adminWrite.error.message}` : "allowed", "allowed");
+if (!adminWrite.error) await admin.from("sports").delete().eq("slug", "tabletennis");
+
+// A blocked UPDATE under RLS matches zero rows rather than erroring, so the
+// only trustworthy assertion is to read the value back afterwards.
+const before = (
+  await admin.from("platform_settings").select("support_email").eq("id", true).single()
+).data?.support_email;
+
+await player
+  .from("platform_settings")
+  .update({ support_email: "hacked@example.com" })
+  .eq("id", true);
+
+const after = (
+  await admin.from("platform_settings").select("support_email").eq("id", true).single()
+).data?.support_email;
+
+check(
+  "player cannot change settings (value unchanged)",
+  after === before ? "blocked" : `MUTATED to ${after}`,
+  "blocked"
+);
+
+console.log("\npermissions");
+const perms = await org.from("event_admin_permissions").select("permission");
+check("organizer has 8 default permissions", perms.error ? "ERR" : perms.data.length, 8);
+
+console.log(failures === 0 ? "\nAll RLS checks passed." : `\n${failures} check(s) FAILED.`);
+process.exit(failures === 0 ? 0 : 1);
