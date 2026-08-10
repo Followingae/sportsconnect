@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Bell, User } from "lucide-react";
+import { Search, Bell } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 /**
