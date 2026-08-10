@@ -35,13 +35,19 @@ npm run dev
 
 ### Test accounts
 
-All use the password `Sportsconnect2026!`.
-
 | Role | Email | Lands on |
 |---|---|---|
 | Super Admin | `admin@sportsconnect.ae` | `/admin` |
 | Event Admin | `organizer@sportsconnect.ae` | `/organizer` |
-| Consumer | `player@sportsconnect.ae` | `/` |
+| Consumer | `player@sportsconnect.ae` | `/home` |
+
+Each account has its own randomly generated password — there is no shared one.
+Run `npm run accounts` to rotate them and regenerate
+`Sportsconnect-Test-Accounts.pdf`. Both that PDF and `credentials.json` are
+gitignored and must never be committed.
+
+`npm run db:users` seeds the accounts for a fresh database; `npm run accounts`
+is what makes them safe to hand out.
 
 ## Scripts
 

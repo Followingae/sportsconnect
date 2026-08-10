@@ -15,7 +15,10 @@
     "db:check": "node scripts/rls-check.mjs",
     "db:seed-demo": "node scripts/seed-demo.mjs",
     "db:money": "node scripts/money-check.mjs",
-    "smoke": "node scripts/smoke-prod.mjs"
+    "smoke": "node scripts/smoke-prod.mjs",
+    "accounts": "node scripts/prod-accounts.mjs && node scripts/make-credentials-pdf.mjs",
+    "vercel:check": "node scripts/vercel-check.mjs",
+    "supabase:auth": "node scripts/supabase-auth-urls.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
