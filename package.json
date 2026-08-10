@@ -14,7 +14,8 @@
     "db:users": "node scripts/seed-users.mjs",
     "db:check": "node scripts/rls-check.mjs",
     "db:seed-demo": "node scripts/seed-demo.mjs",
-    "db:money": "node scripts/money-check.mjs"
+    "db:money": "node scripts/money-check.mjs",
+    "smoke": "node scripts/smoke-prod.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
