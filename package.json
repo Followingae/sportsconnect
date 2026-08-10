@@ -18,7 +18,10 @@
     "smoke": "node scripts/smoke-prod.mjs",
     "accounts": "node scripts/prod-accounts.mjs && node scripts/make-credentials-pdf.mjs && node scripts/verify-pdf.mjs",
     "vercel:check": "node scripts/vercel-check.mjs",
-    "supabase:auth": "node scripts/supabase-auth-urls.mjs"
+    "supabase:auth": "node scripts/supabase-auth-urls.mjs",
+    "email:templates": "node scripts/build-email-templates.mjs",
+    "email:guides": "node scripts/make-role-guides.mjs",
+    "email:send": "node scripts/send-launch-email.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

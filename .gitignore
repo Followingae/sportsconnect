@@ -18,3 +18,4 @@ _handoff*/
 # Generated account credentials
 credentials.json
 *.pdf
+launch-email-preview.html
