@@ -59,12 +59,28 @@ const { rows: fkRows } = await client.query(`
     array_agg(fatt.attname order by u.ord)::text[] as ref_columns,
     -- One-to-one when the referencing columns are themselves unique, e.g.
     -- event_config.event_id being both PK and FK.
-    exists (
-      select 1 from pg_constraint uc
-      where uc.conrelid = con.conrelid
-        and uc.contype in ('p', 'u')
-        and uc.conkey @> con.conkey
-        and con.conkey @> uc.conkey
+    --
+    -- Uniqueness can come from a constraint OR a bare unique index, and
+    -- PostgREST honours both when it decides whether an embed is an object or
+    -- an array. Checking only pg_constraint makes the generated types disagree
+    -- with the runtime for any bare CREATE UNIQUE INDEX.
+    (
+      exists (
+        select 1 from pg_constraint uc
+        where uc.conrelid = con.conrelid
+          and uc.contype in ('p', 'u')
+          and uc.conkey @> con.conkey
+          and con.conkey @> uc.conkey
+      )
+      or exists (
+        select 1 from pg_index i
+        where i.indrelid = con.conrelid
+          and i.indisunique
+          and i.indpred is null                 -- ignore partial indexes
+          and i.indnkeyatts = array_length(con.conkey, 1)
+          and (select array_agg(k order by k) from unnest(i.indkey::int2[]) k)
+              = (select array_agg(c order by c) from unnest(con.conkey) c)
+      )
     )                                              as is_one_to_one
   from pg_constraint con
   join pg_class cl      on cl.oid  = con.conrelid

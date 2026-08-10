@@ -10,7 +10,8 @@ import { cn } from "@/lib/cn";
  * Home · Explore · My events · Payments · Profile.
  */
 const TABS = [
-  { href: "/", label: "Home", Icon: Home, exact: true },
+  // "/" is the marketing site; the app's home lives at /home.
+  { href: "/home", label: "Home", Icon: Home, exact: true },
   { href: "/explore", label: "Explore", Icon: Search },
   { href: "/my-events", label: "My events", Icon: CalendarCheck },
   { href: "/payments", label: "Payments", Icon: Wallet },

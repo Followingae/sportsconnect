@@ -328,4 +328,3 @@ BRD §12 lists 19 required fields. E2 renders 11. Missing:
 
 Items 1–3 are the critical path. Everything else can proceed in parallel with build,
 because the design system itself is settled and the build is already token-driven.
-</content>

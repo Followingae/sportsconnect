@@ -325,4 +325,3 @@ export function ExploreFilters({ options }: { options: FilterOptions }) {
     </>
   );
 }
-</content>

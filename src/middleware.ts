@@ -17,7 +17,8 @@ const ADMIN_HOST = process.env.NEXT_PUBLIC_ADMIN_HOST ?? "admin.sportsconnect.ae
 
 /** Paths reachable without a session. Everything else requires one. */
 const PUBLIC_PREFIXES = [
-  "/", // consumer home
+  "/", // marketing landing
+  "/home", // consumer app home — browsable without an account
   "/e/", // shared event link — must work for a cold visitor
   "/events",
   "/explore",
@@ -67,7 +68,15 @@ export async function middleware(request: NextRequest) {
   // --- 2. Refresh the session ------------------------------------------------
   const { response, supabase, user } = await updateSession(request);
 
-  // --- 3. Authorise ----------------------------------------------------------
+  // --- 3. Signed-in visitors skip the marketing page ------------------------
+  // Someone with an account almost never wants the pitch; send them to the app.
+  if (user && portal === "consumer" && request.nextUrl.pathname === "/") {
+    const home = request.nextUrl.clone();
+    home.pathname = "/home";
+    return NextResponse.redirect(home);
+  }
+
+  // --- 4. Authorise ----------------------------------------------------------
   const needsAuth = portal !== "consumer" || !isPublic(request.nextUrl.pathname);
 
   if (needsAuth && !user) {

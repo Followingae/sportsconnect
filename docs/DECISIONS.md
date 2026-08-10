@@ -82,4 +82,3 @@ See `docs/DESIGN-GAPS.md` §1.1.
 - **Waitlist promotion** — currently manual by the organizer; not automatic on
   cancellation.
 - **Age/gender eligibility** — currently advisory (shown, not enforced at registration).
-</content>

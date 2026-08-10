@@ -111,4 +111,3 @@ export async function getUnreadNotificationCount(userId: string) {
     .is("read_at", null);
   return count ?? 0;
 }
-</content>

@@ -46,6 +46,16 @@
   /* --- Third party ------------------------------------------------------- */
   --color-whatsapp: #25d366;
 
+  /* --- Marketing site ----------------------------------------------------- */
+  /* The public one-pager runs a separate, darker identity from the app. These
+     live here so Tailwind generates the utilities, but they are only ever used
+     inside the `.marketing` scope. */
+  --color-navy: #0b2a39;
+  --color-navy-2: #0e3446;
+  --color-navy-card: #124057;
+  --color-cream: #eaf1f0;
+  --color-muted: #8fb0bc;
+
   /* --- Avatar palette (deterministic by name hash) ----------------------- */
   --color-av-1: #2f4858;
   --color-av-2: #3a6e6a;
@@ -265,6 +275,54 @@ button {
 }
 .animate-pop-in {
   animation: pop-in var(--duration-base) var(--ease-out-soft);
+}
+
+/* ============================================================================
+   MARKETING SITE
+   Scoped to `.marketing` so the app's identity is untouched.
+   ========================================================================== */
+
+/* Italic ultra-black display face — the landing page's signature treatment. */
+.marketing .disp {
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+}
+
+.marketing ::selection {
+  background: var(--color-volt);
+  color: var(--color-ink);
+}
+
+/* The clipped corner on the primary marketing button. */
+@utility btn-clip {
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 94% 100%, 0 100%);
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 24s linear infinite;
+}
+.marquee-track.slow {
+  animation-duration: 30s;
+}
+
+/* Pausing on hover lets someone actually read it, and keyboard users get the
+   same courtesy on focus. */
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
 }
 
 /* ============================================================================

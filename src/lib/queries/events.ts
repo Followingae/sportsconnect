@@ -14,9 +14,10 @@ const CARD_FIELDS = `
   registration_opens_at, registration_closes_at,
   price_amount, currency, price_unit, status, is_featured,
   venue_name, venue_address, registration_model,
-  sport:sports ( id, slug, name, cover_url ),
-  format:sport_formats ( id, slug, name, registration_model ),
-  config:event_config ( max_participants, max_teams, waitlist_capacity )
+  sport:sports!inner ( id, slug, name, cover_url ),
+  format:sport_formats!inner ( id, slug, name, registration_model ),
+  config:event_config ( max_participants, max_teams, waitlist_capacity,
+                        gender_requirement, skill_levels, min_age, max_age )
 `;
 
 export type EventFilters = {
@@ -49,12 +50,19 @@ export async function listEvents(filters: EventFilters = {}) {
     .select(CARD_FIELDS, { count: "exact" })
     .in("status", PUBLIC_EVENT_STATUSES);
 
-  if (filters.sport) q = q.eq("sports.slug", filters.sport);
+  // Filtering on an embedded table needs an inner join, otherwise PostgREST
+  // returns the parent row with a null child instead of excluding it.
+  if (filters.sport) q = q.eq("sport.slug", filters.sport);
+  if (filters.format) q = q.eq("format.slug", filters.format);
   if (filters.dateFrom) q = q.gte("starts_at", filters.dateFrom);
   if (filters.dateTo) q = q.lte("starts_at", filters.dateTo);
   if (filters.priceMin != null) q = q.gte("price_amount", filters.priceMin);
   if (filters.priceMax != null) q = q.lte("price_amount", filters.priceMax);
   if (filters.organizer) q = q.eq("organization_id", filters.organizer);
+  if (filters.gender && filters.gender !== "any") {
+    q = q.in("config.gender_requirement", [filters.gender, "any"]);
+  }
+  if (filters.skill) q = q.contains("config.skill_levels", [filters.skill]);
   if (filters.query) {
     const term = `%${filters.query}%`;
     q = q.or(`name.ilike.${term},venue_name.ilike.${term},description.ilike.${term}`);

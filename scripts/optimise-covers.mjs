@@ -7,8 +7,18 @@ import { join } from "node:path";
 import sharp from "sharp";
 
 const DIR = "public/covers";
-// Only the five BRD sports are used anywhere in the product.
-const KEEP = new Set(["football", "padel", "cricket", "badminton", "basketball"]);
+// The five BRD sports, plus the three extra photographs the marketing landing
+// page uses for its venue cards and secondary imagery.
+const KEEP = new Set([
+  "football",
+  "padel",
+  "cricket",
+  "badminton",
+  "basketball",
+  "padel-alt",
+  "football-alt",
+  "tennis-court",
+]);
 
 const files = await readdir(DIR);
 let before = 0;
