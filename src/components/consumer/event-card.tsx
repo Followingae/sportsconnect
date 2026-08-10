@@ -130,7 +130,10 @@ export function EventRow({ event }: { event: EventCardData }) {
   );
 }
 
-/** Horizontal rail with a heading and a "See all" affordance. */
+/**
+ * A rail on a phone, a grid on a desktop. Horizontal scrolling is the right
+ * gesture on touch and the wrong one with a mouse, so it stops at `lg`.
+ */
 export function EventRail({
   title,
   href,
@@ -145,9 +148,9 @@ export function EventRail({
   if (events.length === 0 && !emptyLabel) return null;
 
   return (
-    <section className="mt-7">
-      <div className="flex items-baseline justify-between gap-3 px-5">
-        <h2 className="text-h3">{title}</h2>
+    <section className="mt-7 lg:mt-12">
+      <div className="flex items-baseline justify-between gap-3 px-5 lg:px-0">
+        <h2 className="text-h3 lg:text-[24px] lg:tracking-[-0.02em]">{title}</h2>
         {href && events.length > 0 && (
           <Link href={href} className="text-[13.5px] font-bold text-volt-deep">
             See all
@@ -156,11 +159,16 @@ export function EventRail({
       </div>
 
       {events.length === 0 ? (
-        <p className="mt-2 px-5 text-[13.5px] text-ink-2">{emptyLabel}</p>
+        <p className="mt-2 px-5 text-[13.5px] text-ink-2 lg:px-0">{emptyLabel}</p>
       ) : (
-        <div className="no-scrollbar mt-3.5 flex gap-3 overflow-x-auto px-5 pb-1">
+        <div
+          className={cn(
+            "no-scrollbar mt-3.5 flex gap-3 overflow-x-auto px-5 pb-1",
+            "lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible lg:px-0"
+          )}
+        >
           {events.map((e) => (
-            <div key={e.id} className="w-[280px] shrink-0">
+            <div key={e.id} className="w-[280px] shrink-0 lg:w-auto">
               <EventHeroCard event={e} />
             </div>
           ))}

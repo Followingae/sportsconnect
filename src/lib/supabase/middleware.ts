@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { AUTH_COOKIE_OPTIONS } from "@/lib/supabase/session";
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
@@ -22,7 +23,8 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           response = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
+            // Persist across browser restarts; see lib/supabase/session.ts.
+            response.cookies.set(name, value, { ...options, ...AUTH_COOKIE_OPTIONS })
           );
         },
       },

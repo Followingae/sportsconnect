@@ -134,7 +134,7 @@ export function slugify(input: string, withSuffix = true): string {
   return `${base || "event"}-${suffix}`;
 }
 
-/** "ZR" from "Zak Rahman" */
+/** "JD" from "John Doe" */
 export function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "?";

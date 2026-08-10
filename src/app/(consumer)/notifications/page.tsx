@@ -28,8 +28,8 @@ export default async function NotificationsPage() {
 
   return (
     <div>
-      <header className="flex items-baseline justify-between gap-3 px-5 pt-4">
-        <h1 className="text-h2">Notifications</h1>
+      <header className="flex items-baseline justify-between gap-3 px-5 pt-4 lg:px-0 lg:pt-0">
+        <h1 className="text-h2 lg:text-[36px] lg:tracking-[-0.03em]">Notifications</h1>
         {unread > 0 && (
           <form action={markNotificationsRead}>
             <button type="submit" className="text-[13px] font-bold text-volt-deep">
@@ -49,7 +49,7 @@ export default async function NotificationsPage() {
           actionHref="/explore"
         />
       ) : (
-        <Card className="mx-5 mt-4 p-0">
+        <Card className="mx-5 mt-4 p-0 lg:mx-0 lg:max-w-[720px]">
           {items.map((n, i) => {
             const body = (
               <div className={cn("flex gap-3 p-4", !n.read_at && "bg-volt-wash/40")}>

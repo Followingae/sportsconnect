@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { AUTH_COOKIE_OPTIONS } from "@/lib/supabase/session";
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 import type { Database } from "@/lib/database.types";
@@ -19,7 +20,8 @@ export async function createClient() {
         setAll(cookiesToSet: CookieToSet[]) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              // Our max-age last so the session survives a browser restart.
+              cookieStore.set(name, value, { ...options, ...AUTH_COOKIE_OPTIONS })
             );
           } catch {
             // Called from a Server Component, where cookies are read-only.

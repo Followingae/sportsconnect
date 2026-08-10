@@ -14,3 +14,7 @@ next-env.d.ts
 
 # Design handoff bundles — reference material, not source.
 _handoff*/
+
+# Generated account credentials
+credentials.json
+*.pdf

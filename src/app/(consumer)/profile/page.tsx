@@ -52,14 +52,14 @@ export default async function ProfilePage() {
 
   return (
     <div>
-      <header className="px-5 pt-6 text-center">
-        <Avatar name={name} src={profile?.avatar_url} size="xl" className="mx-auto" />
-        <h1 className="mt-4 text-h2">{name}</h1>
+      <header className="px-5 pt-6 text-center lg:px-0 lg:pt-0 lg:text-left">
+        <Avatar name={name} src={profile?.avatar_url} size="xl" className="mx-auto lg:mx-0" />
+        <h1 className="mt-4 text-h2 lg:text-[32px] lg:tracking-[-0.03em]">{name}</h1>
         <p className="mt-1 text-[13px] text-ink-2">{profile?.email ?? user.email}</p>
         {profile?.phone && <p className="text-[13px] text-ink-3">{profile.phone}</p>}
       </header>
 
-      <div className="mt-5 flex gap-3 px-5">
+      <div className="mt-5 flex gap-3 px-5 lg:mt-8 lg:max-w-[520px] lg:px-0">
         {stats.map((s) => (
           <Card key={s.label} className="flex-1 px-2.5 py-4 text-center">
             <p className="text-[24px] font-black tabular-nums">{s.value}</p>
@@ -69,7 +69,7 @@ export default async function ProfilePage() {
       </div>
 
       {(perks.creditTotal > 0 || perks.discountPercent > 0) && (
-        <section className="mx-5 mt-4 flex items-center justify-between gap-4 rounded-card-lg bg-ink p-[18px] text-white">
+        <section className="mx-5 mt-4 flex items-center justify-between gap-4 rounded-card-lg bg-ink p-[18px] text-white lg:mx-0 lg:max-w-[520px] lg:p-6">
           <div>
             <p className="text-[12px] text-ink-inverse">Account credit</p>
             <p className="mt-0.5 text-[24px] font-black tabular-nums text-volt">
@@ -84,7 +84,7 @@ export default async function ProfilePage() {
         </section>
       )}
 
-      <Card className="mx-5 mt-4 p-0">
+      <Card className="mx-5 mt-4 p-0 lg:mx-0 lg:max-w-[520px]">
         {links.map((l, i) => (
           <div key={l.href}>
             {i > 0 && <Divider className="mx-4" />}
@@ -105,7 +105,7 @@ export default async function ProfilePage() {
         ))}
       </Card>
 
-      <form action={signOut} className="mx-5 mt-4">
+      <form action={signOut} className="mx-5 mt-4 lg:mx-0 lg:max-w-[520px]">
         <button
           type="submit"
           className="flex w-full items-center justify-center gap-2 rounded-card border border-line-strong bg-white py-3.5 text-[14px] font-bold text-danger"

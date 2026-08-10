@@ -33,8 +33,14 @@ export function RegistrationGateBar({
 
   return (
     <div
-      className="stick-fade fixed inset-x-0 bottom-0 z-30 mx-auto max-w-[560px] px-5 pt-7"
-      style={{ paddingBottom: "calc(var(--nav-clearance) + 4px)" }}
+      className={cn(
+        // Phone: a sticky bar above the bottom nav, as designed.
+        "stick-fade fixed inset-x-0 bottom-0 z-30 mx-auto max-w-[560px] px-5 pt-7",
+        "pb-[calc(var(--nav-clearance)+4px)]",
+        // Desktop: it becomes a card inside the sidebar column instead.
+        "lg:static lg:mx-0 lg:max-w-none lg:rounded-card lg:border lg:border-line",
+        "lg:bg-white lg:bg-none lg:p-5 lg:pb-5 lg:pt-5 lg:shadow-[var(--shadow-card)]"
+      )}
     >
       {message && (
         <p
@@ -50,10 +56,12 @@ export function RegistrationGateBar({
         </p>
       )}
 
-      <div className="flex items-center gap-3.5">
-        <div className="shrink-0">
+      <div className="flex items-center gap-3.5 lg:flex-col lg:items-stretch lg:gap-4">
+        <div className="shrink-0 lg:border-b lg:border-line lg:pb-4">
           <div className="text-[12px] text-ink-3">{priceCaption}</div>
-          <div className="text-[21px] font-extrabold tabular-nums">{priceLine}</div>
+          <div className="text-[21px] font-extrabold tabular-nums lg:text-[28px]">
+            {priceLine}
+          </div>
         </div>
 
         {label ? (
@@ -61,7 +69,7 @@ export function RegistrationGateBar({
             href={hrefFor(gate, slug)}
             className={cn(
               "flex flex-1 items-center justify-center rounded-btn px-5 py-[17px]",
-              "text-[16px] font-extrabold",
+              "text-[16px] font-extrabold lg:flex-none",
               gate.kind === "already_registered"
                 ? "border border-line-strong bg-white text-ink"
                 : "bg-volt text-ink"
@@ -70,7 +78,7 @@ export function RegistrationGateBar({
             {label}
           </Link>
         ) : (
-          <div className="flex flex-1 items-center justify-center rounded-btn bg-soft px-5 py-[17px] text-[15px] font-bold text-ink-3">
+          <div className="flex flex-1 items-center justify-center rounded-btn bg-soft px-5 py-[17px] text-[15px] font-bold text-ink-3 lg:flex-none">
             Registration unavailable
           </div>
         )}

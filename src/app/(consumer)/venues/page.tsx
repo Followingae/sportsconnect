@@ -13,7 +13,7 @@ export default function VenuesPage() {
   ];
 
   return (
-    <div className="px-5 pt-6">
+    <div className="px-5 pt-6 lg:max-w-[720px] lg:px-0 lg:pt-0">
       <ComingSoonBadge />
       <h1 className="mt-3 text-h1">Bring your courts online</h1>
       <p className="mt-3 text-[15px] leading-relaxed text-ink-2">

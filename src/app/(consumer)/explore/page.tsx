@@ -99,8 +99,8 @@ export default async function ExplorePage({
 
   return (
     <div>
-      <header className="px-5 pt-4">
-        <h1 className="text-h2">Explore</h1>
+      <header className="px-5 pt-4 lg:px-0 lg:pt-0">
+        <h1 className="text-h2 lg:text-[36px] lg:tracking-[-0.03em]">Explore</h1>
       </header>
 
       <div className="mt-4">
@@ -117,7 +117,7 @@ export default async function ExplorePage({
         />
       </div>
 
-      <p className="mt-4 px-5 text-[13px] text-ink-3" aria-live="polite">
+      <p className="mt-4 px-5 text-[13px] text-ink-3 lg:px-0" aria-live="polite">
         {pluralize(total, "event")} found
       </p>
 
@@ -131,7 +131,7 @@ export default async function ExplorePage({
           actionHref="/explore"
         />
       ) : (
-        <div className="mt-3 flex flex-col gap-3 px-5">
+        <div className="mt-3 flex flex-col gap-3 px-5 lg:grid lg:grid-cols-2 lg:gap-4 lg:px-0 xl:grid-cols-3">
           {visible.map((e) => (
             <EventRow key={e.id} event={e} />
           ))}

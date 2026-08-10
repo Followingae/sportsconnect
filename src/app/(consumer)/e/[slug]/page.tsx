@@ -90,9 +90,9 @@ export default async function EventPage({ params }: Props) {
   const shareUrl = `${SITE_URL}/e/${event.slug}`;
 
   return (
-    <article className="pb-40">
+    <article className="pb-40 lg:grid lg:grid-cols-[1.7fr_1fr] lg:gap-8 lg:pb-0">
       {/* ---------- hero ---------- */}
-      <div className="relative">
+      <div className="relative lg:col-span-2 lg:overflow-hidden lg:rounded-card-lg">
         <Cover
           src={cover}
           alt=""
@@ -101,7 +101,7 @@ export default async function EventPage({ params }: Props) {
           sizes="(max-width: 560px) 100vw, 560px"
           rounded="rounded-none"
           fallbackLabel={event.sport?.name?.[0]}
-          className="h-[260px] w-full"
+          className="h-[260px] w-full lg:h-[340px]"
         >
           <div
             className="absolute inset-x-4 flex items-center justify-between"
@@ -110,7 +110,7 @@ export default async function EventPage({ params }: Props) {
             <Link
               href="/explore"
               aria-label="Back to explore"
-              className="grid size-9 place-items-center rounded-full bg-ink/50 text-white backdrop-blur-sm"
+              className="grid size-9 place-items-center rounded-full bg-ink/50 text-white backdrop-blur-sm lg:hidden"
             >
               <ChevronLeft size={18} aria-hidden />
             </Link>
@@ -126,7 +126,7 @@ export default async function EventPage({ params }: Props) {
               {event.sport && <Tag tone="volt">{event.sport.name}</Tag>}
               {event.format && <Tag tone="outline" className="border-white/40 text-white">{event.format.name}</Tag>}
             </div>
-            <h1 className="mt-2.5 text-[26px] font-extrabold leading-[1.08] tracking-[-0.025em]">
+            <h1 className="mt-2.5 text-[26px] font-extrabold leading-[1.08] tracking-[-0.025em] lg:text-[40px] lg:tracking-[-0.03em]">
               {event.name}
             </h1>
             {event.venue_name && (
@@ -138,7 +138,7 @@ export default async function EventPage({ params }: Props) {
         </Cover>
       </div>
 
-      <div className="px-5">
+      <div className="px-5 lg:px-0">
         {/* ---------- status, when it isn't the plain open case ---------- */}
         {event.status !== "registration_open" && (
           <div className="mt-4">
@@ -323,14 +323,18 @@ export default async function EventPage({ params }: Props) {
         )}
       </div>
 
-      <RegistrationGateBar
-        gate={gate}
-        slug={event.slug}
-        price={event.price_amount}
-        currency={event.currency}
-        priceUnit={event.price_unit}
-        model={event.registration_model}
-      />
+      {/* Sticky sidebar on desktop; the component itself becomes a fixed bar
+          on phones, so the same markup serves both. */}
+      <aside className="lg:sticky lg:top-24 lg:mt-4 lg:self-start">
+        <RegistrationGateBar
+          gate={gate}
+          slug={event.slug}
+          price={event.price_amount}
+          currency={event.currency}
+          priceUnit={event.price_unit}
+          model={event.registration_model}
+        />
+      </aside>
     </article>
   );
 }

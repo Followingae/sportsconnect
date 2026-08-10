@@ -31,20 +31,20 @@ export default async function HomePage() {
   return (
     <>
       {/* --- header ------------------------------------------------------- */}
-      <header className="px-5 pt-4">
+      <header className="px-5 pt-4 lg:px-0 lg:pt-0">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="flex items-center gap-1 text-[13px] font-semibold text-ink-2">
               <MapPin size={13} aria-hidden /> Dubai
             </p>
-            <h1 className="mt-1 text-h2">
+            <h1 className="mt-1 text-h2 lg:text-[36px] lg:tracking-[-0.03em]">
               {firstName ? `Hi ${firstName}, find your event` : "Find your event"}
             </h1>
           </div>
           <Link
             href="/profile"
             aria-label="Your profile"
-            className="grid size-11 shrink-0 place-items-center rounded-full bg-av-1 text-[15px] font-extrabold text-white"
+            className="grid size-11 shrink-0 place-items-center rounded-full bg-av-1 text-[15px] font-extrabold text-white lg:hidden"
           >
             {firstName?.[0]?.toUpperCase() ?? "S"}
           </Link>
@@ -52,7 +52,7 @@ export default async function HomePage() {
 
         <Link
           href="/explore"
-          className="mt-4 flex items-center gap-2.5 rounded-field bg-soft px-4 py-[15px] text-[15px] text-ink-3"
+          className="mt-4 flex items-center gap-2.5 rounded-field bg-soft px-4 py-[15px] text-[15px] text-ink-3 lg:mt-6 lg:max-w-[460px]"
         >
           <Search size={17} aria-hidden />
           Search events, sports or venues
@@ -61,7 +61,7 @@ export default async function HomePage() {
 
       {/* --- sport pills -------------------------------------------------- */}
       {sports.length > 0 && (
-        <nav aria-label="Browse by sport" className="no-scrollbar mt-4 flex gap-2 overflow-x-auto px-5">
+        <nav aria-label="Browse by sport" className="no-scrollbar mt-4 flex gap-2 overflow-x-auto px-5 lg:mt-6 lg:flex-wrap lg:overflow-visible lg:px-0">
           <Link
             href="/explore"
             className="shrink-0 rounded-full bg-ink px-3.5 py-2 text-[13px] font-semibold text-white"
@@ -102,15 +102,17 @@ export default async function HomePage() {
 
           {/* --- upcoming list ---------------------------------------------- */}
           {rails.upcoming.length > 0 && (
-            <section className="mt-8 px-5">
+            <section className="mt-8 px-5 lg:mt-12 lg:px-0">
               <div className="flex items-baseline justify-between gap-3">
-                <h2 className="text-h3">Upcoming events</h2>
+                <h2 className="text-h3 lg:text-[24px] lg:tracking-[-0.02em]">
+                  Upcoming events
+                </h2>
                 <Link href="/explore" className="text-[13.5px] font-bold text-volt-deep">
                   See all
                 </Link>
               </div>
-              <div className="mt-3.5 flex flex-col gap-3">
-                {(rails.upcoming as EventCardData[]).slice(0, 5).map((e) => (
+              <div className="mt-3.5 flex flex-col gap-3 lg:grid lg:grid-cols-2 lg:gap-4">
+                {(rails.upcoming as EventCardData[]).slice(0, 6).map((e) => (
                   <EventRow key={e.id} event={e} />
                 ))}
               </div>
@@ -119,15 +121,21 @@ export default async function HomePage() {
 
           {/* --- popular sports --------------------------------------------- */}
           {sports.length > 0 && (
-            <section className="mt-9 px-5">
-              <h2 className="text-h3">Browse sports</h2>
+            <section className="mt-9 px-5 lg:mt-12 lg:px-0">
+              <h2 className="text-h3 lg:text-[24px] lg:tracking-[-0.02em]">Browse sports</h2>
               <p className="mt-1 text-meta text-ink-2">Pick a sport to see events near you.</p>
-              <div className="mt-3.5 grid grid-cols-2 gap-3">
+              <div className="mt-3.5 grid grid-cols-2 gap-3 lg:grid-cols-5 lg:gap-4">
                 {sports.map((s, i) => (
                   <Link
                     key={s.id}
                     href={`/explore?sport=${s.slug}`}
-                    className={i === sports.length - 1 && sports.length % 2 === 1 ? "col-span-2" : undefined}
+                    // The odd one out spans the row on a phone; on desktop the
+                    // five sports fit a five-column grid exactly.
+                    className={
+                      i === sports.length - 1 && sports.length % 2 === 1
+                        ? "col-span-2 lg:col-span-1"
+                        : undefined
+                    }
                   >
                     <Cover
                       src={s.cover_url}

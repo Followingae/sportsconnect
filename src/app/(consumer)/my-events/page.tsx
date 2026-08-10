@@ -43,13 +43,13 @@ export default async function MyEventsPage({
 
   return (
     <div>
-      <header className="px-5 pt-4">
-        <h1 className="text-h2">My events</h1>
+      <header className="px-5 pt-4 lg:px-0 lg:pt-0">
+        <h1 className="text-h2 lg:text-[36px] lg:tracking-[-0.03em]">My events</h1>
       </header>
 
       <nav
         aria-label="Registration status"
-        className="no-scrollbar mt-4 flex gap-6 overflow-x-auto border-b border-line px-5"
+        className="no-scrollbar mt-4 flex gap-6 overflow-x-auto border-b border-line px-5 lg:mt-6 lg:px-0"
       >
         {TABS.map((t) => {
           const isActive = t.key === active;
@@ -96,7 +96,7 @@ export default async function MyEventsPage({
           actionHref="/explore"
         />
       ) : (
-        <div className="mt-4 flex flex-col gap-3.5 px-5">
+        <div className="mt-4 flex flex-col gap-3.5 px-5 lg:grid lg:grid-cols-2 lg:gap-5 lg:px-0 xl:grid-cols-3">
           {rows.map((r) => {
             const e = r.event;
             if (!e) return null;

@@ -178,6 +178,35 @@ button {
   letter-spacing: inherit;
 }
 
+/* iOS Safari zooms the viewport whenever a focused field is under 16px, which
+   throws the layout around on every tap. Bumping to 16px on touch pointers
+   stops it without shrinking the deliberate density on desktop, and without
+   disabling pinch-zoom (which would be an accessibility failure). */
+@media (pointer: coarse) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Same class of problem on small viewports with a mouse emulator. */
+@media screen and (max-width: 1023px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="date"],
+  input[type="datetime-local"],
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
+}
+
 /* Hide scrollbars on horizontal rails without losing scrollability. */
 .no-scrollbar {
   scrollbar-width: none;

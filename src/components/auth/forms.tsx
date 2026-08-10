@@ -112,7 +112,7 @@ export function SignUpForm() {
 
       <div className="flex flex-col gap-4">
         <Field label="Full name" htmlFor="full_name" required>
-          <Input id="full_name" name="full_name" autoComplete="name" required placeholder="Zak Rahman" />
+          <Input id="full_name" name="full_name" autoComplete="name" required placeholder="John Doe" />
         </Field>
         <Field label="Email" htmlFor="email" required>
           <Input id="email" name="email" type="email" autoComplete="email" required placeholder="you@example.com" />

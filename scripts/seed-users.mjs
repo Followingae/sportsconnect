@@ -36,7 +36,7 @@ const USERS = [
   },
   {
     email: "player@sportsconnect.ae",
-    full_name: "Zak Rahman",
+    full_name: "John Doe",
     role: "consumer",
     phone: "+971 50 123 4567",
   },

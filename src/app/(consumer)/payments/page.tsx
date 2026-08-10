@@ -35,13 +35,13 @@ export default async function PaymentsPage() {
 
   return (
     <div>
-      <header className="px-5 pt-4">
-        <h1 className="text-h2">Payments</h1>
+      <header className="px-5 pt-4 lg:px-0 lg:pt-0">
+        <h1 className="text-h2 lg:text-[36px] lg:tracking-[-0.03em]">Payments</h1>
       </header>
 
       {/* account perks — the ink card from the designs */}
       {(perks.creditTotal > 0 || perks.discountPercent > 0) && (
-        <section className="mx-5 mt-4 flex items-center justify-between gap-4 rounded-card-lg bg-ink p-[18px] text-white">
+        <section className="mx-5 mt-4 flex items-center justify-between gap-4 rounded-card-lg bg-ink p-[18px] text-white lg:mx-0 lg:max-w-[420px] lg:p-6">
           <div>
             <p className="text-[12px] text-ink-inverse">Account credit</p>
             <p className="mt-0.5 text-[24px] font-black text-volt tabular-nums">
@@ -57,7 +57,7 @@ export default async function PaymentsPage() {
       )}
 
       {outstanding > 0 && (
-        <p className="mx-5 mt-4 rounded-[12px] bg-warning-wash px-3.5 py-3 text-[12.5px] font-semibold text-warning">
+        <p className="mx-5 mt-4 rounded-[12px] bg-warning-wash px-3.5 py-3 text-[12.5px] font-semibold text-warning lg:mx-0">
           {money(outstanding)} outstanding across{" "}
           {payments.filter((p) => ["pending", "processing"].includes(p.status)).length}{" "}
           registration(s). Your places are held until each event&apos;s registration closes.
@@ -65,7 +65,7 @@ export default async function PaymentsPage() {
       )}
 
       {/* payment history */}
-      <section className="mt-6 px-5">
+      <section className="mt-6 px-5 lg:mt-10 lg:px-0">
         <h2 className="text-h3">History</h2>
 
         {payments.length === 0 ? (
@@ -114,7 +114,7 @@ export default async function PaymentsPage() {
 
       {/* refunds */}
       {refunds.length > 0 && (
-        <section className="mt-7 px-5">
+        <section className="mt-7 px-5 lg:mt-10 lg:px-0">
           <h2 className="text-h3">Refunds</h2>
           <Card className="mt-3 p-0">
             {refunds.map((r, i) => (
@@ -148,7 +148,7 @@ export default async function PaymentsPage() {
         </section>
       )}
 
-      <p className="mx-5 mt-6 text-[12px] leading-relaxed text-ink-3">
+      <p className="mx-5 mt-6 max-w-[70ch] text-[12px] leading-relaxed text-ink-3 lg:mx-0">
         Card payments are coming soon. For now every registration is settled by bank
         transfer or cash at the venue, and confirmed manually once the money is received.
       </p>

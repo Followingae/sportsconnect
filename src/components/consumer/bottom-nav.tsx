@@ -26,7 +26,9 @@ export function BottomNav() {
       aria-label="Main"
       className={cn(
         "fixed inset-x-3 z-40 mx-auto max-w-[520px] rounded-nav p-[7px]",
-        "flex items-stretch bg-ink/95 shadow-[var(--shadow-nav)] backdrop-blur-xl on-ink"
+        "flex items-stretch bg-ink/95 shadow-[var(--shadow-nav)] backdrop-blur-xl on-ink",
+        // Desktop gets the top bar instead.
+        "lg:hidden"
       )}
       style={{ bottom: "calc(16px + var(--safe-bottom))" }}
     >

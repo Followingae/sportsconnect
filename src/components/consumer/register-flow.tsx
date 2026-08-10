@@ -156,7 +156,7 @@ export function RegisterFlow(props: RegisterFlowProps) {
   /* ------------------------------------------------------------------ */
 
   return (
-    <div className="pb-40">
+    <div className="mx-auto max-w-[560px] pb-40">
       <header className="flex items-center gap-3 px-5 pt-4">
         {step !== "done" && (
           <button
