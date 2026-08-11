@@ -24,7 +24,8 @@
     "email:guides": "node scripts/make-role-guides.mjs",
     "email:send": "node scripts/send-launch-email.mjs",
     "dns:check": "node scripts/check-subdomains.mjs",
-    "email:supabase": "node scripts/supabase-email-templates.mjs"
+    "email:supabase": "node scripts/supabase-email-templates.mjs",
+    "qa": "node scripts/qa-flows.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

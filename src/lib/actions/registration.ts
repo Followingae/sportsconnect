@@ -189,7 +189,7 @@ export async function registerForEvent(input: RegisterInput): Promise<RegisterRe
 
   // --- teammates (named squad members, no accounts of their own) -------------
   if (teamId && data.teammates?.length) {
-    await supabase.from("registrations").insert(
+    const { error: squadError } = await supabase.from("registrations").insert(
       data.teammates.map((m) => ({
         event_id: event.id,
         team_id: teamId,
@@ -203,6 +203,14 @@ export async function registerForEvent(input: RegisterInput): Promise<RegisterRe
         created_by: user.id,
       }))
     );
+
+    // Dropping named squad members silently would hand the captain a team that
+    // looks complete and is not, so this fails the whole registration.
+    if (squadError) {
+      await supabase.from("registrations").delete().eq("id", registration.id);
+      await supabase.from("teams").delete().eq("id", teamId);
+      return { ok: false, error: "Couldn't add your squad. Try again." };
+    }
   }
 
   // --- custom question answers -----------------------------------------------
@@ -212,7 +220,15 @@ export async function registerForEvent(input: RegisterInput): Promise<RegisterRe
       question_id,
       value: value as never,
     }));
-    await supabase.from("registration_answers").insert(rows);
+    const { error: answersError } = await supabase
+      .from("registration_answers")
+      .insert(rows);
+
+    if (answersError) {
+      await supabase.from("registrations").delete().eq("id", registration.id);
+      if (teamId) await supabase.from("teams").delete().eq("id", teamId);
+      return { ok: false, error: "Couldn't save your answers. Try again." };
+    }
   }
 
   // --- payment ----------------------------------------------------------------
