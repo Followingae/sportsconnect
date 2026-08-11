@@ -1,5 +1,9 @@
-"use client";
-
+// Deliberately NOT "use client". Server pages build their columns with
+// `render` callbacks, and a function prop cannot cross the server→client
+// boundary — doing so throws "Functions cannot be passed directly to Client
+// Components" at request time. As a shared component this renders on the
+// server for server pages, and is bundled as client code for the client
+// tables that import it.
 import * as React from "react";
 import { cn } from "@/lib/cn";
 import { EmptyState, SkeletonRows } from "./feedback";
@@ -27,7 +31,6 @@ export function DataTable<T>({
   keyOf,
   loading,
   empty,
-  onRowClick,
   className,
   caption,
 }: {
@@ -36,7 +39,6 @@ export function DataTable<T>({
   keyOf: (row: T) => string;
   loading?: boolean;
   empty?: React.ReactNode;
-  onRowClick?: (row: T) => void;
   className?: string;
   caption: string;
 }) {
@@ -86,29 +88,15 @@ export function DataTable<T>({
       </div>
 
       {rows.map((row) => {
-        const interactive = Boolean(onRowClick);
         return (
           <div
             key={keyOf(row)}
             role="row"
-            tabIndex={interactive ? 0 : undefined}
-            onClick={interactive ? () => onRowClick!(row) : undefined}
-            onKeyDown={
-              interactive
-                ? (e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      onRowClick!(row);
-                    }
-                  }
-                : undefined
-            }
             className={cn(
               "grid grid-cols-1 gap-2 border-t border-line px-4 py-3 text-[12.5px]",
               // Below md the row stacks; from md it adopts the shared track
               // template, which is passed down as a CSS variable.
-              "md:items-center md:gap-3.5 md:[grid-template-columns:var(--tpl)]",
-              interactive && "cursor-pointer hover:bg-soft/60"
+              "md:items-center md:gap-3.5 md:[grid-template-columns:var(--tpl)]"
             )}
           >
             {columns.map((c) => (
