@@ -15,6 +15,26 @@ import { updateSession } from "@/lib/supabase/middleware";
 const ORGANIZER_HOST = process.env.NEXT_PUBLIC_ORGANIZER_HOST ?? "organizer.sportsconnect.ae";
 const ADMIN_HOST = process.env.NEXT_PUBLIC_ADMIN_HOST ?? "admin.sportsconnect.ae";
 
+/**
+ * Paths that belong to no portal: they live at the root on every host, are
+ * never prefixed, and never require a session. Sign-in cannot sit behind the
+ * sign-in guard — that is an infinite redirect.
+ */
+const SHARED_PREFIXES = [
+  "/login",
+  "/signup",
+  "/verify-email",
+  "/forgot-password",
+  "/reset-password",
+  "/auth/",
+  "/no-access",
+  "/legal",
+];
+
+function isShared(pathname: string) {
+  return SHARED_PREFIXES.some((p) => pathname === p || pathname.startsWith(p));
+}
+
 /** Paths reachable without a session. Everything else requires one. */
 const PUBLIC_PREFIXES = [
   "/", // marketing landing
@@ -46,15 +66,23 @@ export async function middleware(request: NextRequest) {
 
   // --- 1. Map subdomain → path prefix ---------------------------------------
   let portal: "consumer" | "organizer" | "admin" = "consumer";
+  const shared = isShared(url.pathname);
+  // A path that already carries a portal prefix is passed through untouched,
+  // so /admin on the organizer host doesn't become /organizer/admin.
+  const prefixed =
+    url.pathname === "/organizer" ||
+    url.pathname === "/admin" ||
+    url.pathname.startsWith("/organizer/") ||
+    url.pathname.startsWith("/admin/");
 
   if (host === ORGANIZER_HOST) {
     portal = "organizer";
-    if (!url.pathname.startsWith("/organizer")) {
+    if (!shared && !prefixed) {
       url.pathname = `/organizer${url.pathname === "/" ? "" : url.pathname}`;
     }
   } else if (host === ADMIN_HOST) {
     portal = "admin";
-    if (!url.pathname.startsWith("/admin")) {
+    if (!shared && !prefixed) {
       url.pathname = `/admin${url.pathname === "/" ? "" : url.pathname}`;
     }
   } else if (url.pathname.startsWith("/organizer")) {
@@ -77,16 +105,18 @@ export async function middleware(request: NextRequest) {
   }
 
   // --- 4. Authorise ----------------------------------------------------------
-  const needsAuth = portal !== "consumer" || !isPublic(request.nextUrl.pathname);
+  const needsAuth =
+    !shared && (portal !== "consumer" || !isPublic(request.nextUrl.pathname));
 
   if (needsAuth && !user) {
     const login = request.nextUrl.clone();
     login.pathname = "/login";
+    login.search = "";
     login.searchParams.set("next", request.nextUrl.pathname + request.nextUrl.search);
     return NextResponse.redirect(login);
   }
 
-  if (user && portal !== "consumer") {
+  if (user && portal !== "consumer" && !shared) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("role, status")

@@ -99,9 +99,19 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
     data: { user },
   } = await supabase.auth.getUser();
 
-  let destination = parsed.data.next?.startsWith("/") ? parsed.data.next : "/";
+  // Only same-site paths, and never back to an auth screen — that would bounce
+  // the user straight into the form they just completed.
+  const wanted = parsed.data.next ?? "";
+  const safeNext =
+    wanted.startsWith("/") &&
+    !wanted.startsWith("//") &&
+    !/^\/(login|signup|verify-email|forgot-password|reset-password|auth\/)/.test(wanted)
+      ? wanted
+      : "";
 
-  if (user && !parsed.data.next) {
+  let destination = safeNext || "/";
+
+  if (user && !safeNext) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
